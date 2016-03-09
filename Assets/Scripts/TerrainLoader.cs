@@ -9,6 +9,11 @@ public class TerrainLoader : MonoBehaviour
     [HideInInspector]
     public Terrain[,] TerrainGrid;
 
+    [HideInInspector]
+    public bool isFinished = false;
+
+    public GameObject detector;
+
 
 
 
@@ -69,6 +74,7 @@ public class TerrainLoader : MonoBehaviour
                 Terrain Bottom = (row + 1 == TerrainGrid.GetLength(0)) ? null : TerrainGrid[row + 1, col];
 
                 TerrainGrid[row, col].SetNeighbors(Left, Top, Right, Bottom);
+                TerrainGrid[row, col].gameObject.SetActive(false);
 
                 #region Print statement checks
                 /*
@@ -88,9 +94,23 @@ public class TerrainLoader : MonoBehaviour
 
             } // end col
         }
+        isFinished = true;
 
     }
 
+    void Update()
+    {
+        if(isFinished)
+        {
+
+            // LoadAdditiveTerrain l1 = GetComponent<LoadAdditiveTerrain>();
+
+            // l1.loadTerrain();
+
+           // detector.GetComponent<LoadAdditiveTerrain>().loadTerrain();
+        }
+
+    }
 
 
 }
