@@ -102,15 +102,29 @@ public class TerrainLoader : MonoBehaviour
     {
         if(isFinished)
         {
+            for (int row = 0; row < TerrainGrid.GetLength(0); row++)
+            {
+                for (int col = 0; col < TerrainGrid.GetLength(1); col++)
+                {
+                    float tGridReal = TerrainGrid[row, col].transform.position.z; // get the world position of the current tile
+                    const int buffer = 500; // set a fixed difference for the detector
+                    int finalOutput = (int)tGridReal + buffer; // add the difference to the world position for z coordinates
 
-            // LoadAdditiveTerrain l1 = GetComponent<LoadAdditiveTerrain>();
+                    if (/*xpos begin*/ detector.transform.localPosition.x == TerrainGrid[row, col].transform.position.x /*xpos end*/ )
+                        //(&&  /*zpos begin*/ detector.transform.localPosition.z  == finalOutput/*zpos end*/)
+                    {
+                        TerrainGrid[row, col].gameObject.SetActive(true);
+                        print("Setting " + TerrainGrid[row, col].name + " active");
+                    }
+                    else
+                    {
+                        TerrainGrid[row, col].gameObject.SetActive(false);
+                    }
+                } // end col
+            } // end row
+        } // end if
 
-            // l1.loadTerrain();
-
-           // detector.GetComponent<LoadAdditiveTerrain>().loadTerrain();
-        }
-
-    }
+    } // end update
 
 
 }
