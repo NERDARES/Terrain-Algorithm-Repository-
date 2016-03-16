@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEditor;
+using System.IO;
 using System;
 using System.Collections;
 
@@ -37,12 +38,29 @@ public class TerrainManagement : MonoBehaviour
 
         }
 
+
         if (Scenes != null)
         {
             print("Deleteing scenes. Please wait as it may take some time to delete");
-            FileUtil.DeleteFileOrDirectory("Assets/Terrain Scenes");
+            foreach (var _scene in Scenes)
+            {
+                var currentScene = EditorSceneManager.GetSceneByName(_scene);
+                EditorSceneManager.CloseScene(currentScene, true);
+                if(File.Exists("Assets/Terrain Scenes/" + _scene + ".unity"))
+                {
+                    print("Now deleting a file at: Assets/Terrain Scenes/" + _scene + ".unity");
+                    File.Delete("Assets/Terrain Scenes/" + _scene + ".unity");
+                }
+                else
+                {
+                    print("Cannot find the correct files");
+                }
+
+            }
         }
 
+        
+        
         TerrainList = null;
         TerrainGrid = null;
         Scenes = null;
