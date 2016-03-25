@@ -8,7 +8,7 @@ public class TerrainManagementEditor : Editor
 {
 
 
-    public static int iteration = 0;
+    public int iteration = 0;
 
     public override void OnInspectorGUI()
     {

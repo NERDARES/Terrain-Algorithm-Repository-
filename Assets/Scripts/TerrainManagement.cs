@@ -6,9 +6,13 @@ using System.IO;
 using System;
 using System.Collections;
 
-//[ExecuteInEditMode]
+
 public class TerrainManagement : MonoBehaviour
 {
+
+    public Scene OriginalScene;
+
+    public Scene Backup;
 
     public GameObject TerrainMaster; //Object to store the terrain master to get the child component informantion
 
@@ -16,7 +20,7 @@ public class TerrainManagement : MonoBehaviour
     public Terrain[] TerrainList; // Array to store all the terrains in order in a list fashion
 
     [HideInInspector]
-    public Terrain[,] TerrainGrid; //Array to store all the terrains in  a grid fashion
+    public Terrain[,] TerrainGrid; //Array to store all the terrains in a grid fashion
 
     public GameObject Player; //Gameobject to get player to record their positioning relative to terrain
 
@@ -46,18 +50,14 @@ public class TerrainManagement : MonoBehaviour
             {
                 var currentScene = EditorSceneManager.GetSceneByName(_scene);
                 EditorSceneManager.CloseScene(currentScene, true);
-                if(File.Exists("Assets/Terrain Scenes/" + _scene + ".unity"))
-                {
-                    print("Now deleting a file at: Assets/Terrain Scenes/" + _scene + ".unity");
-                    File.Delete("Assets/Terrain Scenes/" + _scene + ".unity");
-                }
-                else
-                {
-                    print("Cannot find the correct files");
-                }
 
-            }
-        }
+                print("Now deleting a file at: Assets/Terrain Scenes/" + _scene + ".unity");
+                File.Delete("Assets/Terrain Scenes/" + _scene + ".unity");
+
+
+            } // end foreach
+
+        } // end if
 
         
         
@@ -143,11 +143,13 @@ public class TerrainManagement : MonoBehaviour
             } // end col
         } // end row
 
-        print("Finished storing the scene names");
+        print("Finished storing the scene names!");
         #endregion
 
         #region Make Scenes
-        var initialScene = EditorSceneManager.GetActiveScene(); // hold a reference for the original scene
+
+        OriginalScene = EditorSceneManager.GetActiveScene();
+
         foreach (var _scene in Scenes)
         {
             print("Creating: " + _scene);
@@ -156,27 +158,25 @@ public class TerrainManagement : MonoBehaviour
             EditorSceneManager.SaveScene(currentScene, "Assets/Terrain Scenes/" + _scene +".unity", false); //save current scene
 
         }
-        EditorSceneManager.SetActiveScene(initialScene); //go back to initial scene
+        EditorSceneManager.SetActiveScene(OriginalScene); //go back to initial scene
+        print("Finished creating the scenes!");
         #endregion
 
         #region Put scenes into build settings
-            //var newEditorScenes = new EditorBuildSettingsScene[Scenes.Length];
+        var newEditorScenes = new EditorBuildSettingsScene[Scenes.Length];
 
-            //int count = 0;
-            //for (int row = 0; row < TerrainGrid.GetLength(0); row++)
-            //{
-            //    for (int col = 0; col < TerrainGrid.GetLength(1); col++)
-            //    {
-            //        var sceneToAdd = new EditorBuildSettingsScene("Assets/Terrain Scenes/" + Scenes[count], true);
-            //        newEditorScenes[count] = sceneToAdd;
-            //        count++;
-            //    } // end col
-            //} // end row
+        int count = 0;
+        foreach (var element in Scenes)
+        {
+            var sceneToAdd = new EditorBuildSettingsScene("Assets/Terrain Scenes/" + Scenes[count], true);
+            newEditorScenes[count] = sceneToAdd;
+            count++;
+        }
 
-            //EditorBuildSettings.scenes = newEditorScenes;
+        EditorBuildSettings.scenes = newEditorScenes;
 
-            //print("Finished creating scenes!");
-            #endregion
+        print("Finished adding scenes to build settings!");
+        #endregion
     }// Creates the scenes
 
     public void LoadTerrains()
