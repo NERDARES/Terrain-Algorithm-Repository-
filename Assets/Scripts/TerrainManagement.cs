@@ -2,7 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEditor;
-using System.IO;
 using System;
 using System.Collections;
 
@@ -30,6 +29,13 @@ public class TerrainManagement : MonoBehaviour
 
     public void Restart()
     {
+        for (int i = 0; i < TerrainList.Length; i++)
+        {            
+            SceneManager.MoveGameObjectToScene(TerrainList[i].gameObject, SceneManager.GetActiveScene());
+            TerrainList[i].transform.parent = TerrainMaster.transform;
+            EditorSceneManager.SaveScene(SceneManager.GetSceneByName(Scenes[i]));
+        }
+
         if (TerrainGrid != null)
         {
             for (int row = 0; row < TerrainGrid.GetLength(0); row++)
@@ -52,15 +58,14 @@ public class TerrainManagement : MonoBehaviour
                 EditorSceneManager.CloseScene(currentScene, true);
 
                 print("Now deleting a file at: Assets/Terrain Scenes/" + _scene + ".unity");
-                File.Delete("Assets/Terrain Scenes/" + _scene + ".unity");
 
 
             } // end foreach
-
+            FileUtil.DeleteFileOrDirectory("Assets/Terrain Scenes");
         } // end if
 
-        
-        
+
+
         TerrainList = null;
         TerrainGrid = null;
         Scenes = null;
@@ -104,7 +109,7 @@ public class TerrainManagement : MonoBehaviour
                 Terrain Bottom = (row + 1 == TerrainGrid.GetLength(0)) ? null : TerrainGrid[row + 1, col];
 
                 TerrainGrid[row, col].SetNeighbors(Left, Top, Right, Bottom); //set the current terrain's neighbor
-                TerrainGrid[row, col].gameObject.SetActive(false); //set the terrain invisible
+                //TerrainGrid[row, col].gameObject.SetActive(false); //set the terrain invisible
 
                 #region Print statement checks
 
@@ -162,6 +167,18 @@ public class TerrainManagement : MonoBehaviour
         print("Finished creating the scenes!");
         #endregion
 
+        #region ADD TILES TO RESPECTIVE SCENE
+
+        for (int i = 0; i < TerrainList.Length; i++)
+        {
+            TerrainList[i].transform.parent = null;
+            SceneManager.MoveGameObjectToScene(TerrainList[i].gameObject, SceneManager.GetSceneByName(Scenes[i]));
+            EditorSceneManager.SaveScene(SceneManager.GetSceneByName(Scenes[i]));
+        }
+
+        #endregion
+
+
         #region Put scenes into build settings
         var newEditorScenes = new EditorBuildSettingsScene[Scenes.Length];
 
@@ -177,7 +194,10 @@ public class TerrainManagement : MonoBehaviour
 
         print("Finished adding scenes to build settings!");
         #endregion
-    }// Creates the scenes
+
+
+
+    }// End Creates the scenes
 
     public void LoadTerrains()
     {
